@@ -1,0 +1,156 @@
+include "Include/include_libraries.edp";
+include "Include/include_load_domain.edp";
+include "Include/include_functions.edp";
+include "Include/include_parameters.edp";
+
+fespace Vh(Th, P1);
+
+Vh u, s, w, z;
+Vh u0, s0, wT, zT, u0Inicial, s0Inicial;
+Vh ub, sb, wb, zb;
+
+// ==== MODIFICAR ===
+string nombreArchivo = "Prueba1";
+int days = 1;
+real dt = 0.01;
+// ==================
+
+system("mkdir -p results/"+nombreArchivo+"/optimalControl"); // Modificar para Windows
+
+string filename = "results/"+nombreArchivo+"/optimalControl/data.txt";
+
+real nIter = 100;
+real nIter1 = nIter + 1;
+
+Vh[int] uVec(nIter1), sVec(nIter1), wVec(nIter1), zVec(nIter1); // Vectores donde se guardan las variables por paso de tiempo
+Vh[int] uVecAux(nIter1), sVecAux(nIter1); // Vectores auxiliares por si hay que hacer algun cálculo para no modificar los vectores principales (anteriores)
+
+real[int] U(nIter1), S(nIter1), dU(nIter1), dS(nIter1), dUant(nIter1), dSant(nIter1), Uaux(nIter1), Saux(nIter1), U2aux(nIter1), S2aux(nIter1); // Vectores reales
+real[int] fResta(nIter1); // Vector donde se guardan la diferencias de los funciones
+
+real[int] colorTumor=[
+    0, 0 , 0.0,  // Negro
+    0, 0 , 0.45, // Gris intermedio
+    0, 0 , 0.9   // Gris claro
+];
+
+real[int] colorOxigeno=[
+    4./6., 1   , 0.3,  // Azul oscuro
+    0.6  , 0.6 , 0.6,  // Azul medio
+    0.56 , 0.4 , 0.9   // Azul celeste
+];
+
+
+bool continuar = true;
+int continuar2 = 1;
+
+real Jantiguo;
+
+real[int] funcional(101);
+
+real dUnorm, dSnorm, dU0norm, dS0norm, dSnormAnt, dUnormAnt, dUnormResta, dSnormResta;
+
+// Definición concentración inicial oxígeno
+real sl=(1.-0.01*pmax/alpha);
+s0=beta*sl;
+
+problem densidadTumor(u,ub)=
+    int2d(Th)(D*(dx(u)*dx(ub)+dy(u)*dy(ub)) - xhi*(s0/(kox+s0))*(u*dx(s0)*dx(ub)+u*dy(s0)*dy(ub)))
+    +int2d(Th)(u*ub/dt + (rho(s0)-controlC)*u0*u*ub)
+    -int2d(Th)(u0*ub/dt + alpha*(rho(s0)-controlC)*u0*ub);
+
+problem nutrientes(s,sb)=
+    int2d(Th)(dSigma*(dx(s)*dx(sb)+dy(s)*dy(sb)))
+    +int2d(Th,qft=qf1pTlump)(s*sb/dt + AoxAlpha*TruncDo(u0)*s/(kox+s0)*sb + Per*Sv*s*sb)
+    -int2d(Th,qft=qf1pTlump)(s0*sb/dt + Per*Sv*beta*sb - controlS*u*sb);
+
+for(int m = 0; m <= nIter; m++)
+{
+    U[m] = TruncUpU((5.794e-6)*bc*dc*exp(-(m*dt)/tc));
+    S[m] = TruncUpS(ba*da*exp(-(m*dt)/ta));
+}
+
+// Tumor inicial
+        u0Inicial=0.;
+        for (int i = 0; i < Th.nt; i++)
+             {
+             for (int j = 0; j < 3; j++)
+             if(((Th[i][j].x-0.5)^2+2*(Th[i][j].y-1)^2<=(0.03)) ){//&& (2*Th[i][j].x^2+(Th[i][j].y-0.4)^2<=0.8)
+                  u0Inicial[][Vh(i,j)]=609000*randreal1();
+                  if(u0Inicial[][Vh(i,j)]<578800){
+                      u0Inicial[][Vh(i,j)]=0;
+                  }
+                  }   
+             }
+
+
+        s0Inicial = beta*(1-((0.01)*u0Inicial)/alpha);
+
+string auxnombre1 = "results/"+nombreArchivo+"/optimalControl/u0.ps";
+plot(u0Inicial, value=1, fill=true, hsv=colorTumor, ps=auxnombre1);
+auxnombre1 = "results/"+nombreArchivo+"/optimalControl/s0.ps";
+plot(s0, value=1, fill=true, hsv=colorTumor, ps=auxnombre1);
+savesol("results/"+nombreArchivo+"/optimalControl/u0.sol", Th, u0Inicial, order = 1);
+savesol("results/"+nombreArchivo+"/optimalControl/s0.sol", Th, s0, order = 1);
+
+while(true)
+{
+	iteracionesSistema = iteracionesSistema + 1;
+    string filename = "results/"+nombreArchivo+"/optimalControl/data_iter_"+iteracionesSistema+".txt";
+    cout << "=========================== ITERACION SISTEMA CONTROL OPTIMO "<<  iteracionesSistema << " =============" << endl;
+    Escribir(filename, "Iteraciones del sistema "+iteracionesSistema, true);
+
+
+    //if(iteracionesSistema == 1)
+    //{
+		// ==============================
+        // =========== PASO 1 ===========
+        // ==============================
+        cout << " ===== PASO 1: SE RESUELVE EL PROBLEMA PRINCIPAL ====" << endl;
+        Escribir(filename, "\n\n[PASO 1] Se resuelve la ecuacion principal con control\n", false);
+        if(iteracionesSistema > 100){Escribir(filename, "\n\n[STOP] cantidad de iteraciones posibles superada\n", false);break;}
+
+        system("mkdir -p results/"+nombreArchivo+"/optimalControl/images/Iter_"+iteracionesSistema);
+        system("mkdir -p results/"+nombreArchivo+"/optimalControl/solutions/Iter_"+iteracionesSistema);
+
+        include "include/include_OptimalControl_part1.edp";
+
+    //}
+    // ==============================
+    // =========== PASO 2 ===========
+    // ==============================
+    cout << " ===== PASO 2: SE RESUELVE EL ADJUNTO ====" << endl;
+    Escribir(filename, "\n\n[PASO 2] Se resuelve las ecuaciones del adjunto\n", false);
+
+    include "include/include_OptimalControl_part2.edp";
+
+
+    // ==============================
+    // =========== PASO 3 ===========
+    // ==============================
+    cout << " ===== PASO 3: SE CALCULAN LAS GRADIENTES ====" << endl;
+    Escribir(filename, "\n\n[PASO 2] Se calculan las gradientes\n", false);
+
+    include "include/include_OptimalControl_part3.edp";
+
+
+    // ==============================
+    // =========== PASO 4 ===========
+    // ==============================
+    cout << " ===== PASO 4: SE CALCULAN LAS NORMAS ====" << endl;
+    Escribir(filename, "\n\n[PASO 3] Se calculan las gradientes\n", false);
+
+    include "include/include_OptimalControl_part4.edp";
+
+    // ==================================
+    // =========== PASO 5 y 6 ===========
+    // ==================================
+    cout << " ===== PASO 5 y 6: SE CALCULAN NUEVOS CANDIDATOS A CONTROLES Y SE BUSCA EL QUE MINIMICE EL FUNCIONAL ====" << endl;
+    Escribir(filename, "\n\n[PASO 5 y 6] Se calculan nuevos candidatos a controles y se busca el que haga minimo el funcional\n", false);
+
+    //if(tipoDePaso == 1){include "archivos/partes_del_algoritmo_de_control_optimo/Parte5_manual.edp";}
+    //else if(tipoDePaso == 2){include "archivos/partes_del_algoritmo_de_control_optimo/Parte5_automatico.edp";}
+    //include "include/include_OptimalControl_part5_automatic.edp";
+    include "include/include_OptimalControl_part5_manual.edp";
+}
+
