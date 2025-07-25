@@ -1,0 +1,23 @@
+// Escribir(filename, "{", false);
+for(int m = 0; m <= nIter; m++)
+{
+	// Se cargan los controles
+	controlC = U[m];
+	controlS = S[m];
+
+	// Se cargan los valores para las funciones
+	u = uVec[m];
+	w = wVec[m];
+	z = zVec[m];
+
+	// Se calculan las gradientes
+	dU[m] = 1 - (int2d(Th)(h(u)*w)/k3);
+	dS[m] = 1 - (int2d(Th)(u*z)/k4);
+
+	// cout<<dU[m]<<";"<<dS[m]<<endl;
+
+	real auxiliar1 = dU[m]; //int2d(Th)(hprima(u)*w);
+	real auxiliar2 = dS[m]; //int2d(Th)(u*z);
+	Escribir(filename, "		dU: "+auxiliar1+"; dS: "+auxiliar2+"\n", false);
+}
+// Escribir(filename, "}", false);

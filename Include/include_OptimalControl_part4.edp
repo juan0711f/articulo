@@ -1,0 +1,82 @@
+// Se calcula la norma del actual
+real sumAux = 0;
+real sumAux2 = 0;
+for(int i = 1; i <= nIter-1; i++)
+{
+	sumAux += square(dU[i]);
+	sumAux2 += square(dS[i]);
+}
+dUnorm = dt * 0.5 * (square(dU[0]) + 2*sumAux + square(dU[nIter]));
+dSnorm = dt * 0.5 * (square(dS[0]) + 2*sumAux2 + square(dS[nIter]));
+
+Escribir(filename, "Normas actuales: \n dUnorm: "+dUnorm+", dSnorm: "+dSnorm+"\n", false);
+cout<<"Normas: "<<endl<<"dUnorm: "<<dUnorm<<"          "<<"dSnorm: "<<dSnorm<<endl;
+
+/*
+	dS0norm y dU0norm representan las iniciales
+	dSnormAnt y dUnormAnt representan las de la iteracion anterior
+	dSnorm y dUnorm representan las de la iteracion actual
+*/
+// === Criterio 1 ===
+if(iteracionesSistema == 1)
+{
+	dS0norm = dSnorm;
+	dU0norm = dUnorm;
+
+	dUnormAnt = dUnorm;
+	dSnormAnt = dSnorm;
+
+	// Voz("Como es la primera iteracion, no se verifica ningun criterio.");
+	Escribir(filename, "\n\n Primera iteracion, no se verifica ningun criterio. \n", false);
+	for(int m = 0; m <= nIter; m++)
+	{
+		dUant[m] = dU[m];
+		dSant[m] = dS[m];
+	}
+}
+else
+{
+	// Criterio 1
+	Escribir(filename, "\n\n Se revisa el primer criterio. \n", false);
+	if(dUnorm < tol1*dU0norm && dSnorm < tol1*dS0norm){Escribir(filename, "\n\n[STOP] Se verifico el primer criterio\n", false);
+	//Voz("Se verifico el primer criterio. Se completo el algoritmo.");
+	break;}
+	else{Escribir(filename, "\n\n No se cumple el primer criterio. \n", false);
+	// Voz("No se cumple con el primer criterio.");
+}
+
+	// Criterio 2
+
+	// Se calcula la norma de la resta
+    real sumAux = 0;
+	real sumAux2 = 0;
+	for(int i = 1; i <= nIter-1; i++)
+	{
+		sumAux += square(dU[i] - dUant[i]);
+		sumAux2 += square(dS[i] - dSant[i]);
+	}
+	dUnormResta = dt * 0.5 * (square(dU[0]-dUant[0]) + 2*sumAux + square(dU[nIter]-dUant[nIter]));
+	dSnormResta = dt * 0.5 * (square(dS[0]-dSant[0]) + 2*sumAux2 + square(dS[nIter]-dSant[nIter]));
+
+	Escribir(filename, "\n\n Se revisa el segundo criterio. \n", false);
+	if(dUnormResta < tol2*dUnormAnt && dSnormResta < tol2*dSnormAnt){Escribir(filename, "\n\n[STOP] Se verifico el segundo criterio\n", false);
+	//Voz("Se verifico el segundo criterio. Se completo el algoritmo.");
+	break;}
+	else{
+		Escribir(filename, "\n\n No se cumple el segundo criterio. \n", false);
+	//Voz("No se cumple con el segundo criterio.");
+	}
+
+	/*
+	 	Ya que se revisaron los criterios, se actualiza los anteriores como los actuales
+	*/
+	dUnormAnt = dUnorm;
+	dSnormAnt = dSnorm;
+
+	// Acá se actualizan las gradientes del paso de tiempo, para en la siguiente iteración calcular la norma de la resta
+	for(int m = 0; m <= nIter; m++)
+	{
+		dUant[m] = dU[m];
+		dSant[m] = dS[m];
+	}
+}

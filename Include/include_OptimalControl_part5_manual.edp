@@ -1,0 +1,181 @@
+bool primera = true;
+real pesoC = 1;
+real pesoS = 1;
+continuar2 = 1;
+string pesoString1 = "";
+string pesoString2 = "";
+while(continuar2 == 1)
+{
+	cout<<endl<<endl<<"Ingrese el peso a usar para el control C: ";
+	try{
+		cin>>pesoC;
+	} catch(...)
+	{
+		cout<<"Lo ingresado no es correcto"<<endl;
+		pesoC = 1;
+	}
+
+	cout<<endl<<endl<<"Ingrese el peso a usar para el control S: ";
+	try{
+		cin>>pesoS;
+	} catch(...)
+	{
+		cout<<"Lo ingresado no es correcto"<<endl;
+		pesoS = 1;
+	}
+
+	pesoString1 = pesoString1 + pesoC + "; ";
+	pesoString2 = pesoString2 + pesoS + "; ";
+	if(!primera)
+	{
+		Escribir(filename, "\n === menor funcional obtenido de los pesos anteriores: "+J+" === \n", false);
+		cout<<"menor funcional obtenido de los pesos anteriores: "<<J<<endl;
+	}
+	if(iteracionesSistema != 1)
+	{
+		Escribir(filename, "\n === funcional de la iteracion anterior: "+Jantiguo+" === \n", false);
+		cout<<"Funcional de la iteracion anterior: "<<Jantiguo<<endl;
+	}
+	Escribir(filename, "\n === peso usado: Para la C: "+pesoC+" y Para la S: "+pesoS+" === \n", false);
+	
+
+	for(int m = 0; m <= nIter; m++)
+	{
+		Uaux[m] = TruncUpU(TruncDo(U[m] - pesoC*dU[m]));
+		Saux[m] = TruncUpS(TruncDo(S[m] - pesoS*dS[m]));
+	}
+
+	ImprimirControles(Uaux, Saux, filename, dt, nIter);
+	//Escribir(filename, "}", false);
+	//Voz("Se procede a calcular el sistema con los controles obtenidos");
+    Escribir(filename, "Se procede a resolver el sistema original con los controles adquiridos usando pesos= Para la C: "+pesoC+" y para la S: "+pesoS+"\n", false);
+
+    include "include/include_OptimalControl_part5_aux.edp";
+
+ 	cout<<endl<<"Se procede a calcular el funcional"<<endl;
+    	Escribir(filename, "\n Se procede a calcular el funcional \n", false);
+
+		real sum1, sum2, sum3, sum4, sum5, sum6;
+	    sum1 = sum2 = sum3 = sum4 = sum5 = sum6 = 0;
+
+	    // J1 y J4 (Durante todo el tiempo)
+		for(int i = 1; i <= nIter-1; i++)
+	    {
+	    	u = uVec[i];
+	    	s = sVec[i];
+			sum1 += int2d(Th)(u);
+			sum4 += int2d(Th)(square(s - beta));
+		}
+		u = uVec[nIter];
+		s = sVec[nIter];
+		u0 = uVec[0];
+		s0 = sVec[0];
+		J1 = k1 * (dt * 0.5 * (int2d(Th)(u0) + 2*sum1 + int2d(Th)(u)));
+		J2 = k2 * 0.5 * (dt * 0.5 * (int2d(Th)(square(s0 - beta))) + 2*sum4 + int2d(Th)(square(s - beta)));
+
+		// J2 y J5 (En el timpo final T)
+		J3 = l1 * int2d(Th)(u);
+		J4 = l2 * 0.5 * int2d(Th)(square(s - beta));
+
+		// J6, J7 (Controles)
+		for(int i = 1; i <= nIter - 1; i++)
+		{
+			//sum2 += square(Uaux[i]);
+			//sum3 += square(Saux[i]);
+			sum6 += Uaux[i];
+			sum5 += Saux[i];
+		}
+		J5 = k3 * (dt * 0.5 * (Uaux[0] + 2*sum6 + Uaux[nIter]));
+		J6 = k4 * (dt * 0.5 * (Saux[0] + 2*sum5 + Saux[nIter]));
+		// J8 = delta1 * 0.5 * dt * (Uaux[0] + 2*sum6 + Uaux[nIter]);
+		// J9 = delta2 * 0.5 * dt * (Saux[0] + 2*sum5 + Saux[nIter]);
+
+
+   	Jaux = J1 + J2 + J3 + J4 + J5 + J6;
+	Escribir(filename, "J obtenido: "+J1+" + "+J2+" + "+J3+" + "+J4+" + "+J5+" + "+J6+" = "+Jaux+"\n\n", false);
+	cout<<endl<<endl<<endl<<"J obtenido: "<<Jaux<<endl;
+	cout<<"pesos usados para la C: "<<pesoString1<<endl;
+	cout<<"pesos usados para la S: "<<pesoString2<<endl;
+
+	if(iteracionesSistema != 1)
+	{
+		cout<<"J antiguo (el que se obtuvo en la iteracion anterior): "<<Jantiguo<<endl;
+		real dife = abs(Jantiguo - Jaux);
+		Escribir(filename, "\n Diferencia con el funcional que se obtuvo en la iteracion del sistema de control: "+dife+"\n\n", false);
+		cout<<"Diferencia con el funcional que se obtuvo en la iteracion del sistema de control anterior: "<<dife<<endl;
+	}
+	if(primera){
+		cout<<"Es la primera iteracion"<<endl;
+		J = Jaux;
+		for(int m = 0; m <= nIter; m++)
+		{
+			U2aux[m] = Uaux[m];
+			S2aux[m] = Saux[m];
+			uVecAux[m] = uVec[m];
+			sVecAux[m] = sVec[m];
+		}
+	}
+	else
+	{
+		cout<<"menor funcional obtenido de los pesos anteriores: "<<J<<endl;
+		if(Jaux < J)
+		{
+			cout<<"El funcional hallado es menor que el menor funcional obtenido de los pesos anteriores con una distancia de: "<<J-Jaux<<endl;
+			cout<<"Se actualizan los datos guardados"<<endl;
+			J = Jaux;
+			if(J < Jantiguo)
+			{
+				cout<<"El funcional NO es menor que el menor funcional obtenido de los pesos anteriores"<<endl;
+			}
+			for(int m = 0; m <= nIter; m++)
+			{
+				U2aux[m] = Uaux[m];
+				S2aux[m] = Saux[m];
+
+				uVecAux[m] = uVec[m];
+				sVecAux[m] = sVec[m];
+			}
+		} else {
+			cout<<"El funcional hallado es mayor que el que se obtuvo en la anterior iteracion con una diferencia de: "<<J-Jaux<<endl;
+		}
+	}
+	primera = false;
+	//Voz("Ingrese 1 para realizar los calculos con otro peso. Ingrese 2 para finalizar la iteracion del sistema de control.");
+	cout<<endl<<endl<<"Desea continuar? 1 - si,     2 - no: ";
+	try{
+		cin>>continuar2;
+	} catch(...)
+	{
+		//Voz("Lo ingresado no es correcto");
+		continuar2 = 0;
+	}
+
+}
+// Voz("Actualizando datos para empezar una nueva iteracion.");
+fResta(iteracionesSistema) = abs(J - Jantiguo);
+funcional(iteracionesSistema) = J;
+Jantiguo = J;
+Escribir(filename, "\n Valores del funcional: \n", false);
+cout<<endl<<"valores del funcional"<<endl;
+for(int i = 1; i <= iteracionesSistema; i++)
+{
+    real funci = funcional[i];
+    cout<<funci<<endl;
+    Escribir(filename, funci+"\n", false);
+}
+Escribir(filename, "\n J_resta: \n", false);
+for(int i = 2; i <= iteracionesSistema; i++)
+{
+    real resta = fResta[i];
+    real aux = iteracionesSistema-1;
+    Escribir(filename, "|J_"+aux+" - J_"+iteracionesSistema+"| = "+resta+"\n", false);
+}
+
+for(int i = 0; i <= nIter; i++)
+{
+    U[i] = U2aux[i];
+    S[i] = S2aux[i];
+	
+	uVec[i] = uVecAux[i];
+	sVec[i] = sVecAux[i];
+}

@@ -1,0 +1,74 @@
+u0 = u0Inicial;
+s0 = s0Inicial;
+plot(u0, value=1, fill=true);
+u = u0;
+s = s0;
+//Escribir(filename, "{", false); // Para ocultar esta información (sublimetext)
+for(int m = 0; m <= nIter; m++)
+{
+	cout << "=== Iteracion de la ecuacion: " << m << " =====" << endl;
+	real dia = m*dt;
+	cout << "dia: " << dia << endl;
+
+	Vh prueba2 = rho(s0);
+
+	controlS = S[m];
+	controlC = U[m];
+	cout<<"Control C: "<<controlC<<endl;
+	cout<<"minimo de rho: "<<prueba2[].min<<endl;
+	U[m] = min(controlC,prueba2[].min);
+	controlC = U[m];
+	cout<<"Nuevo control C: "<<controlC<<endl;
+
+	//rho = (pmax/alpha)*((s0/beta)+b*(1-(s0/beta)));
+	Vh prueba = rho(s0)-controlC;
+	
+	//plot(prueba, value=1, fill=true, wait=true);
+	densidadTumor;
+	nutrientes;
+
+	u0 = TruncDo(u);
+	s0 = TruncUpSigma(TruncDo(s));
+
+	uVec[m] = u0;
+	sVec[m] = s0;
+	string nombre1, nombre2;
+	nombre1 = "Tumor en t = "+dia+" years";
+	nombre2 = "results/"+nombreArchivo+"/optimalControl/images/Iter_"+iteracionesSistema+"/u_"+m+".eps";
+	plot(u0, fill=true, value=1,cmm=nombre1, ps=nombre2);
+	nombre1 = "Oxigeno en t = "+dia+" years";
+	nombre2 = "results/"+nombreArchivo+"/optimalControl/images/Iter_"+iteracionesSistema+"/s_"+m+".eps";
+	plot(s0, fill=true, value=1, cmm=nombre1, ps=nombre2);
+
+	savesol("results/"+nombreArchivo+"/optimalControl/solutions/Iter_"+iteracionesSistema+"/u_"+m+".sol", Th, u0, order = 1);
+	savesol("results/"+nombreArchivo+"/optimalControl/solutions/Iter_"+iteracionesSistema+"/s_"+m+".sol", Th, s0, order = 1);
+
+	real maxu, minu, maxs, mins;
+	maxu = u[].max;
+	minu = u[].min;
+
+	maxs = s[].max;
+	mins = s[].min;
+
+	real maxrhoC, minrhoC, maxrho, minrho;
+	maxrho = prueba2[].max;
+	minrho = prueba2[].min;
+	maxrhoC = prueba[].max;
+	minrhoC = prueba[].min;
+
+
+
+	// Se guardan datos en el archivo
+	real volumen = int2d(Th)(u0);
+	cout << "Volumen: " << volumen << endl;
+	Escribir(filename, "		Iteracion: "+m+", Dia: "+dia+", Volumen: "+volumen+"\n", false);
+	Escribir(filename, "		Min u: "+minu+", Max u: "+maxu+"\n", false);
+	Escribir(filename, "		Min s: "+mins+", Max s: "+maxs+"\n", false);
+	Escribir(filename, "		Min rho-c: "+minrhoC+", Max rho-c: "+maxrhoC+"\n", false);
+	Escribir(filename, "		Min rho: "+minrho+", Max rho-c: "+maxrho+"\n", false);
+}
+
+Escribir(filename, "\nControles usados: \n", false);
+ImprimirControles(U, S, filename, dt, nIter);
+Escribir(filename, "\n \n", false);
+// Escribir(filename, "}", false); // Para ocultar esta información (sublimetext)

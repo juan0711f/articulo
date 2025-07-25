@@ -1,0 +1,61 @@
+real tamanoVectores = 210;
+real tamanoVectores2 = 211;
+
+int iteracionesSistema = 0;
+
+//string filename = "datos.txt";
+
+// Constantes de la dinámica del tumor
+real D = 0.001;                 // Difusion
+real alpha = 2e6;               // Coeficiente de tasa de proliferación de células tumorales en condiciones normóxicas
+real beta = 2e-10;              // Cantidad de oxígeno que entra desde los vasos sanguíneos
+real betaInv = 1/beta;
+real xhi = 1e6;                 // Fuerza de la quimioatracción
+
+// Constantes de la dinámica de los nutrientes (oxígeno)
+real dSigma = 56575;            // Difusion
+real Aox=8.03e-4;
+real kox = 5e-12;
+real Per = 11.31e7;             // Permeabilidad vascular
+real Sv = 1;                    // Densidad celular
+real AoxAlpha = Aox*alpha^(-1);
+real Sc = 6.73e-9;				// [mol/mm^3/year] (Sacado del artículo de próstata)
+real AlphaAux = alpha^(-1);
+
+// Constantes función rho
+real pmax = 13.82;              // Capacidad de carga (representa el número máximo de células tumorales que caben en 1 mm3 de tejido).
+real b = 0.6;
+
+// Constantes de la terapia citotoxica
+real tc = 0.0273973;           // [año] Vida media del fármaco citotoxico
+real bc = 1.59e4;     	       // [1/mg/mm^2] Efecto de la droga citotoxica
+real dc = 7.5e-5;              // [mg/mm^2] Dosis del fármaco citotoxico
+real Smax = 1.96e-9; 			// [mol/mm^3/year] Sacado del artículo de prostata.
+
+// Constantes de la terapia antiangiogenica
+real ta = 0.0822;               // [year] Vida media del fármaco antiangiogénico
+real ba = 9.8e-11;              // [mol/mm^3/año/(mg/kg)] Efecto del fármaco antiangiogénico
+real da = 15;                   // [mg/kg] Dosis del fármaco antiangiogénico
+real Cmax = 0.438;				// 0.438 [year^{-1}]
+
+real rhoPrima = ((pmax*(1-beta))/(alpha*beta));
+
+// Controles (auxiliar)
+real controlS = 0;               // Farmaco Antiangiogenico
+real controlC = 0;               // Fármaco citotoxico
+
+// Tolerancias
+real tol1, tol2;                 // Tolerancias de los 2 modelos respectivamente
+tol1 = tol2 = 0.000001;
+
+// Constantes Funcional
+real k1, k2, k3, k4, l1, l2;
+k1 = 1;
+k2 = 1;
+l1 = 1; 
+l2 = 1;
+k3 = 1e10;
+k4 = 1e13;
+
+// Parametros usados en el funcional
+real J1, J2, J3, J4, J5, J6, J7, J8, J9, Jaux, J;

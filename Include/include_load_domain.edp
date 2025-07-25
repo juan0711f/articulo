@@ -1,0 +1,302 @@
+string imagen = "Assets/Domain/Images/brain2.pgm";
+real areaBrain = 1;//9.5033177e9; // Area del dominio
+real hsize = 5;
+real[int, int] Curves(3, 3);
+int[int] be(1);
+{
+    real[int, int] ff1(imagen);
+    int nx = ff1.n, ny = ff1.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff1;
+    isoline(Th, f1, iso=0.25, close=1, Curves, beginend=be, smoothing=.1, ratio=0.5);
+}
+int ic0 = be(0), ic1 = be(1)-1;
+plot([Curves(0, ic0:ic1), Curves(1, ic0:ic1)]);
+
+int NC = Curves(2, ic1)/hsize;
+real xl = Curves(0, ic0:ic1).max - 5;
+real yl = Curves(1, ic0:ic1).min + 5;
+border G(t=0, 1){P=Curve(Curves, ic0, ic1, t); label=1+(x>xl)*2+(y<yl);}
+plot(G(-NC));
+
+
+// Agujero 1
+imagen = "Assets/Domain/Images/agujero1.pgm";
+real[int, int] Curves1(3, 3);
+int[int] be1(1);
+{
+    real[int, int] ff1(imagen);
+    int nx = ff1.n, ny = ff1.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff1;
+    isoline(Th, f1, iso=0.25, close=0, Curves1, beginend=be, smoothing=.1, ratio=0.5);
+}
+int ic01 = be(0), ic11 = be(1)-1;
+
+int NC2 = Curves1(2, ic11)/hsize;
+real xl1 = Curves1(0, ic01:ic11).max - 5;
+real yl1 = Curves1(1, ic01:ic11).min + 5;
+border G2(t=0, 1){P=Curve(Curves1, ic01, ic11, t); label=1+(x>xl1)*2+(y<yl1);}
+plot(G2(-NC2));
+
+// Agujero 2
+imagen = "Assets/Domain/Images/agujero2.pgm";
+real[int, int] Curves2(3, 3);
+int[int] be2(1);
+{
+    real[int, int] ff2(imagen);
+    int nx = ff2.n, ny = ff2.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff2;
+    isoline(Th, f1, iso=0.25, close=0, Curves2, beginend=be2, smoothing=.1, ratio=0.5);
+}
+int ic02 = be2(0), ic12 = be2(1)-1;
+//plot([Curves(0, ic0:ic1), Curves(1, ic0:ic1)]);
+
+int NC3 = Curves2(2, ic12)/hsize;
+real xl2 = Curves2(0, ic02:ic12).max - 5;
+real yl2 = Curves2(1, ic02:ic12).min + 5;
+border G3(t=0, 1){P=Curve(Curves2, ic02, ic12, t); label=1+(x>xl2)*2+(y<yl2);}
+plot(G3(-NC3));
+
+// Agujero 3
+imagen = "Assets/Domain/Images/agujero3.pgm";
+real[int, int] Curves3(3, 3);
+int[int] be3(1);
+{
+    real[int, int] ff2(imagen);
+    int nx = ff2.n, ny = ff2.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff2;
+    isoline(Th, f1, iso=0.25, close=0, Curves3, beginend=be3, smoothing=.1, ratio=0.5);
+}
+int ic03 = be3(0), ic13 = be3(1)-1;
+
+int NC4 = Curves3(2, ic13)/hsize;
+real xl3 = Curves3(0, ic03:ic13).max - 5;
+real yl3 = Curves3(1, ic03:ic13).min + 5;
+border G4(t=0, 1){P=Curve(Curves3, ic03, ic13, t); label=1+(x>xl3)*2+(y<yl3);}
+plot(G4(-NC4));
+
+
+// Agujero 4
+imagen = "Assets/Domain/Images/agujero4.pgm";
+real[int, int] Curves4(3, 3);
+int[int] be4(1);
+int nc4;
+{
+    real[int, int] ff2(imagen);
+    int nx = ff2.n, ny = ff2.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff2;
+    isoline(Th, f1, iso=0.25, close=0, Curves4, beginend=be4, smoothing=.1, ratio=0.5);
+}
+int ic04 = be4(0), ic14 = be4(1)-1;
+
+int NC5 = Curves4(2, ic14)/hsize;
+real xl4 = Curves4(0, ic04:ic14).max - 5;
+real yl4 = Curves4(1, ic04:ic14).min + 5;
+border G5(t=0, 1){P=Curve(Curves4, ic04, ic14, t); label=1+(x>xl4)*2+(y<yl4);}
+plot(G5(-NC5));
+
+
+// Agujero 5
+imagen = "Assets/Domain/Images/agujero5.pgm";
+real[int, int] Curves5(3, 3);
+int[int] be5(1);
+int nc5;
+{
+    real[int, int] ff2(imagen);
+    int nx = ff2.n, ny = ff2.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff2;
+    nc5 = isoline(Th, f1, iso=0.25, close=0, Curves5, beginend=be5, smoothing=.1, ratio=0.5);
+}
+int ic05 = be5(0), ic15 = be5(1)-1;
+
+int NC6 = Curves5(2, ic15)/hsize;
+real xl5 = Curves5(0, ic05:ic15).max - 5;
+real yl5 = Curves5(1, ic05:ic15).min + 5;
+border G6(t=0, 1){P=Curve(Curves5, ic05, ic15, t); label=1+(x>xl5)*2+(y<yl5);}
+plot(G6(-NC6));
+
+// Agujero 6
+imagen = "Assets/Domain/Images/agujero6.pgm";
+real[int, int] Curves6(3, 3);
+int[int] be6(1);
+{
+    real[int, int] ff2(imagen);
+    int nx = ff2.n, ny = ff2.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff2;
+    isoline(Th, f1, iso=0.25, close=0, Curves6, beginend=be6, smoothing=.1, ratio=0.5);
+}
+int ic06 = be6(0), ic16 = be6(1)-1;
+
+int NC7 = Curves6(2, ic16)/hsize;
+real xl6 = Curves6(0, ic06:ic16).max - 5;
+real yl6 = Curves6(1, ic06:ic16).min + 5;
+border G7(t=0, 1){P=Curve(Curves6, ic06, ic16, t); label=1+(x>xl6)*2+(y<yl6);}
+plot(G7(-NC7));
+
+
+// Agujero 7
+imagen = "Assets/Domain/Images/agujero7.pgm";
+real[int, int] Curves7(3, 3);
+int[int] be7(1);
+int nc7;
+{
+    real[int, int] ff2(imagen);
+    int nx = ff2.n, ny = ff2.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff2;
+    nc7 = isoline(Th, f1, iso=0.25, close=0, Curves7, beginend=be7, smoothing=.1, ratio=0.5);
+}
+int ic07 = be7(0), ic17 = be7(1)-1;
+
+int NC8 = Curves7(2, ic17)/hsize;
+real xl7 = Curves7(0, ic07:ic17).max - 5;
+real yl7 = Curves7(1, ic07:ic17).min + 5;
+border G8(t=0, 1){P=Curve(Curves7, ic07, ic17, t); label=1+(x>xl7)*2+(y<yl7);}
+plot(G8(-NC8));
+
+// Agujero 8
+imagen = "Assets/Domain/Images/agujero8.pgm";
+real[int, int] Curves8(3, 3);
+int[int] be8(1);
+{
+    real[int, int] ff2(imagen);
+    int nx = ff2.n, ny = ff2.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff2;
+    isoline(Th, f1, iso=0.25, close=0, Curves8, beginend=be8, smoothing=.1, ratio=0.5);
+}
+int ic08 = be8(0), ic18 = be8(1)-1;
+int NC9 = Curves8(2, ic18)/hsize;
+real xl8 = Curves8(0, ic08:ic18).max - 5;
+real yl8 = Curves8(1, ic08:ic18).min + 5;
+border G9(t=0, 1){P=Curve(Curves8, ic08, ic18, t); label=1+(x>xl8)*2+(y<yl8);}
+plot(G9(-NC9));
+
+
+// Agujero 9
+imagen = "Assets/Domain/Images/agujero9.pgm";
+real[int, int] Curves9(3, 3);
+int[int] be9(1);
+{
+    real[int, int] ff2(imagen);
+    int nx = ff2.n, ny = ff2.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff2;
+    isoline(Th, f1, iso=0.25, close=0, Curves9, beginend=be9, smoothing=.1, ratio=0.5);
+}
+int ic09 = be9(0), ic19 = be9(1)-1;
+int NC10 = Curves9(2, ic19)/hsize;
+real xl9 = Curves9(0, ic09:ic19).max - 5;
+real yl9 = Curves9(1, ic09:ic19).min + 5;
+border G10(t=0, 1){P=Curve(Curves9, ic09, ic19, t); label=1+(x>xl9)*2+(y<yl9);}
+plot(G10(-NC10));
+
+// Agujero 10
+imagen = "Assets/Domain/Images/agujero12.pgm";
+real[int, int] Curves10(3, 3);
+int[int] be10(1);
+{
+    real[int, int] ff2(imagen);
+    int nx = ff2.n, ny = ff2.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff2;
+    isoline(Th, f1, iso=0.25, close=0, Curves10, beginend=be10, smoothing=.1, ratio=0.5);
+}
+int ic010 = be10(0), ic110 = be10(1)-1;
+int NC11 = Curves10(2, ic110)/hsize;
+real xl10 = Curves10(0, ic010:ic110).max - 5;
+real yl10 = Curves10(1, ic010:ic110).min + 5;
+border G11(t=0, 1){P=Curve(Curves10, ic010, ic110, t); label=1+(x>xl10)*2+(y<yl10);}
+plot(G11(-NC11));
+
+
+// Agujero 11
+imagen = "Assets/Domain/Images/agujero11.pgm";
+real[int, int] Curves11(3, 3);
+int[int] be11(1);
+{
+    real[int, int] ff2(imagen);
+    int nx = ff2.n, ny = ff2.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff2;
+    isoline(Th, f1, iso=0.25, close=0, Curves11, beginend=be11, smoothing=.1, ratio=0.5);
+}
+int ic011 = be11(0), ic111 = be11(1)-1;
+int NC12 = Curves11(2, ic111)/hsize;
+real xl11 = Curves11(0, ic011:ic111).max - 5;
+real yl11 = Curves11(1, ic011:ic111).min + 5;
+border G12(t=0, 1){P=Curve(Curves11, ic011, ic111, t); label=1+(x>xl11)*2+(y<yl11);}
+plot(G12(-NC12));
+
+// Agujero 12
+imagen = "Assets/Domain/Images/agujero12.pgm";
+real[int, int] Curves12(3, 3);
+int[int] be12(1);
+{
+    real[int, int] ff2(imagen);
+    int nx = ff2.n, ny = ff2.m;
+    cout<<nx<<"   "<<ny<<endl;
+    mesh Th = square(nx-1, ny-1, [(nx-1)*(x), (ny-1)*(1-y)]);
+    fespace Vh(Th, P1);
+    Vh f1;
+    f1[] = ff2;
+    isoline(Th, f1, iso=0.25, close=0, Curves12, beginend=be12, smoothing=.1, ratio=0.5);
+}
+int ic012 = be12(0), ic112 = be12(1)-1;
+int NC13 = Curves12(2, ic112)/hsize;
+real xl12 = Curves12(0, ic012:ic112).max - 5;
+real yl12 = Curves12(1, ic012:ic112).min + 5;
+border G13(t=0, 1){P=Curve(Curves12, ic012, ic112, t); label=1+(x>xl12)*2+(y<yl12);}
+plot(G13(-NC13));
+
+
+mesh Th = buildmesh(G(-NC) + G2(NC2) + G3(NC3) + G4(NC4) + G5(NC5) + G6(NC6) + G7(NC7) + G8(NC8) + G9(NC9)
+                    + G10(NC10) + G12(NC12) + G13(NC13));
+plot(Th);
+
+real scale = sqrt(areaBrain/Th.area);
+Th = movemesh(Th, [x*scale, y*scale]);
+cout << "Th.area = " << Th.area << " um^2 " << " == " << areaBrain << " um^2 " << endl;
+plot(Th);

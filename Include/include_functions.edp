@@ -1,0 +1,41 @@
+macro TruncUpSigma(s) (min(s,beta)) //
+macro TruncDo(s) (max(s,0.)) // EOM
+macro TruncUpU(s) (min(s,Cmax)) //
+macro TruncUpS(s) (min(s,Smax)) //
+
+// Funciones involucradas
+macro g(f) (AlphaAux*(f/(kox + f))) //
+macro h(f) (f*(alpha - f)) //
+
+macro hprima(f) (alpha - 2*f) //
+macro gprima(f) (AlphaAux*(kox/((kox + f)*(kox + f)))) //
+macro rho(f) ((pmax/alpha)*((f/beta)+b*(1-(f/beta)))) //
+
+func real Escribir(string filename, string texto, bool titulo)
+{
+    if(titulo)
+    {
+        {
+            ofstream f(filename,append);
+            f<<"\n ========= "+texto+" ========= \n";
+        };
+    } else {
+        {
+            ofstream f(filename,append);
+            f<<texto;
+        };
+    }
+}
+
+// Esta función permite imprimir los controles U y S.
+func real ImprimirControles (real[int] U0, real[int] S0, string filename, real dt, real tamano)
+{
+    {
+        ofstream f(filename, append);
+        f<<"\n ========= CONTROLES ========= \n";
+        for(int n = 0 ; n <= tamano; n++)
+        {
+            f<<"U["+n+"]=" + U0[n] + ";S["+n+"] = "+ S0[n]+";\n";
+        }
+    };
+}

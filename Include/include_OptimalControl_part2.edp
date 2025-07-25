@@ -1,0 +1,49 @@
+// Valores para el tiempo final.
+wT = l1;
+zT = l2 * (sVec[nIter] - beta);
+
+// Escribir(filename, "{", false);
+for(int m = 0; m <= nIter; m++)
+{
+	cout << "		=== Iteracion adjunto: " << m << " ===" << endl;
+	// Se hace el cambio de tiempo, de manera que sea decreciente
+	int i = nIter - m;
+
+	// Se cargan los valores para las variables prinicipales para cada paso de tiempo
+	u = uVec[i];
+	s = sVec[i];
+
+	// Se cargan los controles para cada paso de tiempo
+	controlC = U[i];
+	controlS = S[i];
+
+	// Ecuaciones adjuntas
+	solve ecuaW(w,wb) = int2d(Th)(w*wb/dt + D*(dx(w)*dx(wb)+dy(w)*dy(wb)) - (rho(s)-controlC)*hprima(u)*w*wb)
+						+ int2d(Th)(-wT*wb/dt + Aox*g(s)*z*wb - (Sc - controlS)*z*wb + k1*wb - xhi*alpha*g(s)*(dx(s)*dx(wb)+dy(s)*dy(wb)));
+	solve ecuaZ(z,zb) = int2d(Th)(z*zb/dt + dSigma*(dx(z)*dx(zb)+dy(z)*dy(zb)) + Aox*u*gprima(s)*z*zb - Per*Sv*z*zb)
+						+ int2d(Th)(-zT*zb/dt - rhoPrima*h(u)*w*zb - xhi*alpha*u*g(s)*(dx(w)*dx(zb)+dy(w)*dy(zb)) + xhi*alpha*u*gprima(s)*(dx(w)*dx(s)+dy(w)*dy(s))*zb - k2*(s-beta)*zb);
+	// optimize=2
+ 	
+	// Se actualizan para la siguiente iteracion
+	wT = w;
+	zT = z;
+
+	// Se guardan en los vectores
+    wVec[i] = wT;
+    zVec[i] = zT;
+
+    plot(w, fill=true, value=1);
+
+    real maxz, minz, maxw, minw;
+	maxz = z[].max;
+	minz = z[].min;
+
+	maxw = w[].max;
+	minw = w[].min;
+
+	// Se guardan datos en el archivo
+	Escribir(filename, "\n 		Min w: "+minw+", Max w: "+maxw+"\n", false);
+	Escribir(filename, "		Min z: "+minz+", Max z: "+maxz+"\n\n", false);
+
+}
+// Escribir(filename, "}", false);

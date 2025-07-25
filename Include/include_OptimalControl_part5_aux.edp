@@ -1,0 +1,67 @@
+/*
+	Con este archivo se pretende resolver el sistema para el control calculado.
+	Es por eso que al coger el control, se usan los vectores Saux y Uaux.
+*/
+// Tumor inicial
+u0=u0Inicial;
+s0 = s0Inicial;
+u = u0;
+s = s0;
+plot(u0, value=1, fill=true);
+//Escribir(filename, "{", false);
+for(int m = 0; m <= nIter; m++)
+{
+	cout << "		=== Iteracion (sistema auxiliar): " << m << " ===" << endl;
+	real dia = m*dt;
+	cout << "		years transcurridos: " << dia << endl;
+
+	Vh prueba2 = rho(s0);
+
+	controlS = Saux[m];
+	controlC = Uaux[m];
+	cout<<"Control C: "<<controlC<<endl;
+	cout<<"minimo de rho: "<<prueba2[].min<<endl;
+	Uaux[m] = min(controlC,prueba2[].min);
+	controlC = Uaux[m];
+	cout<<"Nuevo control C: "<<controlC<<endl;
+	
+	Vh prueba = rho(s0)-controlC;
+
+	densidadTumor;
+	nutrientes;
+
+	u0 = TruncDo(u);
+	s0 = TruncUpSigma(TruncDo(s));
+
+	uVec[m] = u0;
+	sVec[m] = s0;
+
+	string nombre1, nombre2;
+	nombre1 = "Tumor en t = "+dia+" years";
+	plot(u0, fill=true, value=1, hsv=colorTumor, cmm=nombre1);
+	nombre1 = "Oxigeno en t = "+dia+" years";
+	plot(s0, fill=true, value=1, hsv=colorOxigeno, cmm=nombre1);
+
+	real maxu, minu, maxs, mins;
+	maxu = u[].max;
+	minu = u[].min;
+
+	maxs = s[].max;
+	mins = s[].min;
+
+	real maxrho, minrho;
+	maxrho = prueba[].max;
+	minrho = prueba[].min;
+
+	// Se guardan datos en el archivo
+	real volumen = int2d(Th)(u0);
+	cout << "Volumen: " << volumen << endl;
+	Escribir(filename, "		Iteracion: "+m+", Dia: "+dia+", Volumen: "+volumen+"\n", false);
+	Escribir(filename, "		Min u: "+minu+", Max u: "+maxu+"\n", false);
+	Escribir(filename, "		Min s: "+mins+", Max s: "+maxs+"\n", false);
+	Escribir(filename, "		Min rho-c: "+minrho+", Max rho-c: "+maxrho+"\n", false);
+}
+Escribir(filename, "\nControles usados: \n", false);
+ImprimirControles(Uaux, Saux, filename, dt, nIter);
+Escribir(filename, "\n \n", false);
+// Escribir(filename, "}", false);
